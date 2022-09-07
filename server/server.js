@@ -3,13 +3,11 @@ import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 dotenv.config();
 
-const app = fastify({
-  logger: true,
-});
+const app = fastify({});
 const prisma = new PrismaClient();
 
 app.get("/posts", async (req, res) => {
-  await prisma.post.findMany({
+  return await prisma.post.findMany({
     select: {
       id: true,
       title: true,

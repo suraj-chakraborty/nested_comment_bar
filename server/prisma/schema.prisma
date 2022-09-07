@@ -11,21 +11,21 @@ datasource db {
 }
 
 model Post {
-  id       String    @id @default(uuid()) @map("_id") @db.ObjectId
+  id       String    @id @default(uuid()) @map("_id")
   title    String
   body     String
   comments Comment[]
 }
 
 model User {
-  id       String    @id @default(uuid()) @map("_id") @db.ObjectId
+  id       String    @id @default(uuid()) @map("_id")
   name     String
   comments Comment[]
   Like     Like[]
 }
 
 model Comment {
-  id        String    @id @default(uuid()) @map("_id") @db.ObjectId
+  id        String    @id @default(uuid()) @map("_id")
   message   String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -40,7 +40,7 @@ model Comment {
 }
 
 model Like {
-  id        String  @id @default(uuid()) @map("_id") @db.ObjectId
+  id        String  @id @default(uuid()) @map("_id")
   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
   userId    String

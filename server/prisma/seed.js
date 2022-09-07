@@ -5,8 +5,12 @@ const prisma = new PrismaClient();
 async function seed() {
   await prisma.post.deleteMany();
   await prisma.user.deleteMany();
-  const raj = await prisma.user.create({ data: { name: "raj" } });
-  const suraj = await prisma.user.create({ data: { name: "suraj" } });
+  const Raj = await prisma.user.create({
+    data: { name: "Raj" },
+  });
+  const Suraj = await prisma.user.create({
+    data: { name: "Suraj" },
+  });
 
   const post1 = await prisma.post.create({
     data: {
@@ -22,20 +26,26 @@ async function seed() {
   });
 
   const comment1 = await prisma.comment.create({
-    data: { message: "I am a root comment", userId: raj.id, postId: post1.id },
+    data: { message: "I am a root comment", userId: Raj.id, postId: post1.id },
   });
   const comment2 = await prisma.comment.create({
     data: {
+      parentId: comment1.id,
       message: "I am a nested comment",
-      userId: suraj.id,
+      userId: Suraj.id,
       postId: post1.id,
     },
   });
   const comment3 = await prisma.comment.create({
     data: {
       message: "I am a root comment",
-      userId: suraj.id,
+      userId: Suraj.id,
       postId: post1.id,
     },
   });
 }
+
+seed();
+
+// first run : npx prisma db push
+// then run : npx prisma db seed
