@@ -1,0 +1,31 @@
+.error {
+  color: red;
+}
+
+.comments {
+  display: grid;
+  width: 100%;
+  padding: 0px;
+  font-size: 18px;
+  font-weight: 400;
+  gap: 10px;
+}
+
+.comment {
+  width: 100%;
+  padding: 20px;
+  background-color: aqua;
+  justify-content: space-between;
+}
+
+.nested_comment_bar .hide {
+  display: none;
+}
+
+.collapse {
+  border: none;
+  width: 100%;
+
+  margin: 0;
+  padding: 0;
+}

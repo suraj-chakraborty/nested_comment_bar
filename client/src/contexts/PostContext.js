@@ -21,13 +21,13 @@ export function PostProvider({ children }) {
     });
     return group;
   }, [post?.comments]);
-  console.log(
-    "🚀 ~ file: PostContext.js ~ line 23 ~ commentsByParentId ~ commentsByParentId",
-    commentsByParentId
-  );
+  // console.log(
+  //   "🚀 ~ file: PostContext.js ~ line 23 ~ commentsByParentId ~ commentsByParentId",
+  //   commentsByParentId
+  // );
 
   function getReply(parentId) {
-    return commentsByParentId(parentId);
+    return commentsByParentId[parentId];
   }
 
   return (

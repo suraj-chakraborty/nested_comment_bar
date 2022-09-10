@@ -52,6 +52,12 @@ app.get("/posts/:id", async (req, res) => {
   );
 });
 
+app.post("/posts/:id/comments", async (req, res) => {
+  if (req.body.message === "" || req.body.message == null) {
+    return res.send(app.httpErrors.badRequest("Message is required"));
+  }
+});
+
 async function comitToDb(promise) {
   const [error, data] = await app.to(promise);
   if (error) return app.httpErrors.internalServerError(error.message);
