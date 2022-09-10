@@ -5,12 +5,12 @@ import { CommentList } from "./CommentList";
 import comments from "../services/comments";
 
 export function Post() {
-  const { post, rootComments } = usePost();
+  const { post, rootComments, createLocalComment } = usePost();
   const { loading, error, execute: createCommentFn } = useAsyncFn(comments);
   function onCommentCreate(message) {
-    return createCommentFn({ postId: post.id, message }).then((comment) => {
-      console.log(comment);
-    });
+    return createCommentFn({ postId: post.id, message }).then(
+      createLocalComment
+    );
   }
   return (
     <>
