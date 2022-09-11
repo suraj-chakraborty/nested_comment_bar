@@ -37,6 +37,17 @@ export function PostProvider({ children }) {
       return [comment, ...prevComments];
     });
   }
+  function updateLocalComment(id, message) {
+    setComments((prevComments) => {
+      return prevComments.map((comment) => {
+        if (comment.id === id) {
+          return { ...comment, message };
+        } else {
+          return comment;
+        }
+      });
+    });
+  }
 
   function getReply(parentId) {
     return commentsByParentId[parentId];
@@ -49,6 +60,7 @@ export function PostProvider({ children }) {
         getReply,
         rootComments: commentsByParentId[null],
         createLocalComment,
+        updateLocalComment,
       }}
     >
       {loading ? (
