@@ -6,9 +6,14 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// datasource db {
+//   provider = "mongodb"
+//   url      = env("DATABASE_URL")
+// }
 
 model Post {
   id       String    @id @default(uuid()) @map("_id")
@@ -40,11 +45,16 @@ model Comment {
 }
 
 model Like {
-  id        String  @id @default(uuid()) @map("_id")
+  // id        Ids     @id @map("_id")
   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
   userId    String
   commentId String
 
-  // @@id([userId, commentId])
+  @@id([userId, commentId])
 }
+
+// type Ids {
+//   userId    String
+//   commentId String
+// }

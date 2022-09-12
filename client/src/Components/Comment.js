@@ -1,25 +1,45 @@
 import { IconBtn } from "./IconButton";
-import { FaEdit, FaHeart, FaReply, FaTrash } from "react-icons/fa";
+import {
+  FaEdit,
+  FaHeart,
+  FaRegBell,
+  FaRegHeart,
+  FaReply,
+  FaTrash,
+} from "react-icons/fa";
 import { usePost } from "../contexts/PostContext";
 import { CommentList } from "./CommentList";
 import { useState } from "react";
 import "./component.css";
 import CommentForm from "./CommentForm";
 import { useAsyncFn } from "../hooks/useAsync";
-import { Comments, DeleteComments, UpdateComments } from "../services/comments";
+import {
+  Comments,
+  DeleteComments,
+  ToggleLike,
+  UpdateComments,
+} from "../services/comments";
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
   dateStyle: "medium",
   timeStyle: "long",
 });
 
-export function Comment({ id, message, user, createdAt }) {
+export function Comment({
+  id,
+  message,
+  user,
+  createdAt,
+  LikeCount,
+  likedByMe,
+}) {
   const {
     post,
     getReply,
     createLocalComment,
     updateLocalComment,
     deleteLocalComment,
+    toggleLocalCommentLike,
   } = usePost();
 
   // creating comment on the server  🍩it has a loading and error state
@@ -30,21 +50,22 @@ export function Comment({ id, message, user, createdAt }) {
   const [isEditing, setIsEditing] = useState(false);
 
   const deleteCommentFn = useAsyncFn(DeleteComments);
-  const [isDeleting, setIsDeleting] = useState(false);
+
+  const toggleCommentLikeFn = useAsyncFn(ToggleLike);
 
   function onCommentReply(message) {
     return createCommentFn
       .execute({ postId: post.id, message, parentId: id })
       .then((comment) => {
         setIsReplying(false);
-        createLocalComment(Comment);
+        createLocalComment(comment);
       });
   }
   function onCommentUpdate(message) {
     return UpdateCommentFn.execute({ postId: post.id, message, id }).then(
       (comment) => {
         setIsEditing(false);
-        // console.log(comment);
+
         updateLocalComment(id, comment.message);
       }
     );
@@ -55,7 +76,11 @@ export function Comment({ id, message, user, createdAt }) {
       .then((comment) => deleteLocalComment(comment.id));
   }
 
-  // function commentDeleting() {}
+  function onToggleCommentLike() {
+    return toggleCommentLikeFn
+      .execute({ id, postId: post.id })
+      .then(({ addLike }) => toggleLocalCommentLike(id, addLike));
+  }
 
   const childComments = getReply(id);
   const [areChildrenHidden, setAreChildrenHidden] = useState(false);
@@ -81,8 +106,13 @@ export function Comment({ id, message, user, createdAt }) {
         )}
 
         <div className="footer">
-          <IconBtn Icon={FaHeart} aria-label="Like">
-            2
+          <IconBtn
+            onClick={onToggleCommentLike}
+            disabled={toggleCommentLikeFn.loading}
+            Icon={likedByMe ? FaHeart : FaRegHeart}
+            aria-label={likedByMe ? "unlike" : "Like"}
+          >
+            {LikeCount}
           </IconBtn>
           <IconBtn
             onClick={() => setIsReplying((prev) => !prev)}
