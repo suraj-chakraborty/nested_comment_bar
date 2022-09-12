@@ -13,3 +13,8 @@ export function UpdateComments({ postId, message, id }) {
     data: { message },
   });
 }
+export function DeleteComments({ postId, id }) {
+  return makeRequest(`/posts/${postId}/comments/${id}`, {
+    method: "delete",
+  });
+}

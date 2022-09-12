@@ -6,7 +6,7 @@ import { useState } from "react";
 import "./component.css";
 import CommentForm from "./CommentForm";
 import { useAsyncFn } from "../hooks/useAsync";
-import { Comments, UpdateComments } from "../services/comments";
+import { Comments, DeleteComments, UpdateComments } from "../services/comments";
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
   dateStyle: "medium",
@@ -14,7 +14,13 @@ const dateFormatter = new Intl.DateTimeFormat(undefined, {
 });
 
 export function Comment({ id, message, user, createdAt }) {
-  const { post, getReply, createLocalComment, updateLocalComment } = usePost();
+  const {
+    post,
+    getReply,
+    createLocalComment,
+    updateLocalComment,
+    deleteLocalComment,
+  } = usePost();
 
   // creating comment on the server  🍩it has a loading and error state
   const createCommentFn = useAsyncFn(Comments);
@@ -22,6 +28,9 @@ export function Comment({ id, message, user, createdAt }) {
 
   const UpdateCommentFn = useAsyncFn(UpdateComments);
   const [isEditing, setIsEditing] = useState(false);
+
+  const deleteCommentFn = useAsyncFn(DeleteComments);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   function onCommentReply(message) {
     return createCommentFn
@@ -40,6 +49,13 @@ export function Comment({ id, message, user, createdAt }) {
       }
     );
   }
+  function onCommentDelete() {
+    return deleteCommentFn
+      .execute({ postId: post.id, id })
+      .then((comment) => deleteLocalComment(comment.id));
+  }
+
+  // function commentDeleting() {}
 
   const childComments = getReply(id);
   const [areChildrenHidden, setAreChildrenHidden] = useState(false);
@@ -81,8 +97,17 @@ export function Comment({ id, message, user, createdAt }) {
             aria-label={isEditing ? "Cancel Edit" : "Edit"}
           />
 
-          <IconBtn Icon={FaTrash} aria-label="Delete" color="danger" />
+          <IconBtn
+            disable={deleteCommentFn.loading}
+            onClick={onCommentDelete}
+            Icon={FaTrash}
+            aria-label="Delete"
+            color="danger"
+          />
         </div>
+        {deleteCommentFn.error && (
+          <div className="error">{deleteCommentFn.error}</div>
+        )}
       </div>
       {isReplying && (
         <div className="mt-1 ml-3">

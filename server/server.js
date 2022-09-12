@@ -109,6 +109,24 @@ app.put("/posts/:postId/comments/:commentId", async (req, res) => {
   );
 });
 
+app.delete("/posts/:postId/comments/:commentId", async (req, res) => {
+  const { userId } = await prisma.comment.findUnique({
+    where: { id: req.params.commentId },
+    select: { userId: true },
+  });
+  if (userId !== req.cookies.userId) {
+    return res.send(
+      app.httpErrors.unauthorized("you are not allowed to perform this action")
+    );
+  }
+  return await comitToDb(
+    prisma.comment.delete({
+      where: { id: req.params.commentId },
+      select: { id: true },
+    })
+  );
+});
+
 async function comitToDb(promise) {
   const [error, data] = await app.to(promise);
   if (error) return app.httpErrors.internalServerError(error.message);
