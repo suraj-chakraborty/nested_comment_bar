@@ -158,29 +158,26 @@ app.delete("/posts/:postId/comments/:commentId", async (req, res) => {
   );
 });
 
-app.post(
-  "/posts/:postId/comments/:commentId/toggleLike",
-  async (req, res) => {
-    const data = {
-      commentId: req.params.commentId,
-      userId: req.cookies.userId,
-    };
-    const like = await prisma.like.findUnique({
-      where: { userId_commentId: data },
+app.post("/posts/:postId/comments/:commentId/toggleLike", async (req, res) => {
+  const data = {
+    commentId: req.params.commentId,
+    userId: req.cookies.userId,
+  };
+  const like = await prisma.like.findUnique({
+    where: { userId_commentId: data },
+  });
+  if (like == null) {
+    return await comitToDb(prisma.like.create({ data })).then(() => {
+      return { addLike: true };
     });
-    if (like == null) {
-      return await comitToDb(prisma.like.create({ data })).then(() => {
-        return { addLike: true };
-      });
-    } else {
-      return await comitToDb(
-        prisma.like.delete({ where: { userId_commentId: data } })
-      ).then(() => {
-        return { addLike: false };
-      });
-    }
+  } else {
+    return await comitToDb(
+      prisma.like.delete({ where: { userId_commentId: data } })
+    ).then(() => {
+      return { addLike: false };
+    });
   }
-);
+});
 
 async function comitToDb(promise) {
   const [error, data] = await app.to(promise);
@@ -188,10 +185,15 @@ async function comitToDb(promise) {
   return data;
 }
 
-app.listen({ port: process.env.PORT }, (err, PORT) => {
-  if (err) {
-    console.log(err.message);
-  } else {
-    console.log(`Server is now listening on ${PORT}`);
+app.listen(
+  { port: process.env.PORT || 5000, access: "0,0,0,0" },
+  (err, PORT, access) => {
+    if (err) {
+      console.log(err.message);
+    } else {
+      console.log(
+        `Server is now listening on ${PORT}you can access from {access}`
+      );
+    }
   }
-});
+);
