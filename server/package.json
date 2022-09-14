@@ -8,7 +8,8 @@
   },
   "scripts": {
     "start": "node server.js",
-    "heroku-postbuild": "npm run build"
+    "build": "gatsby build",
+    "heroku-postbuild": "npm build"
   },
   "keywords": [],
   "author": "",

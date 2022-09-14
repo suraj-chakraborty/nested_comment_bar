@@ -6,13 +6,10 @@ import { PrismaClient } from "@prisma/client";
 import cookie from "@fastify/cookie";
 dotenv.config();
 
-const app = fastify();
+const app = fastify({ logger: true });
 app.register(sensible);
 app.register(cookie, { secret: process.env.Cookie_Secret });
-app.register(cors, {
-  origin: process.env.CLIENT_URL,
-  credentials: true,
-});
+app.register(cors, {});
 app.addHook("onRequest", (req, res, done) => {
   if (req.cookies.userId !== CURRENT_USER_ID) {
     req.cookies.userId = CURRENT_USER_ID;
@@ -185,10 +182,11 @@ async function comitToDb(promise) {
   return data;
 }
 
-app.listen({ port: process.env.PORT || 5000 }, (err, PORT) => {
+var port = process.env.PORT || 8080;
+app.listen({ port }, (err, port) => {
   if (err) {
     console.log(err.message);
   } else {
-    console.log(`Server is now listening on ${PORT}`);
+    console.log(`Server is now listening on ${port}`);
   }
 });
