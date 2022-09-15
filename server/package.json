@@ -8,8 +8,7 @@
   },
   "scripts": {
     "start": "node server.js",
-    "build": "gatsby build",
-    "heroku-postbuild": "npm build"
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
   },
   "keywords": [],
   "author": "",

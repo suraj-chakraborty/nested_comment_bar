@@ -9,7 +9,16 @@ dotenv.config();
 const app = fastify({ logger: true });
 app.register(sensible);
 app.register(cookie, { secret: process.env.Cookie_Secret });
-app.register(cors, {});
+app.register(cors, {
+  origin: true,
+  allowedHeaders: [
+    "Origin",
+    "X-Requested-With",
+    "Accept",
+    "Content-Type",
+    "Authorization",
+  ],
+});
 app.addHook("onRequest", (req, res, done) => {
   if (req.cookies.userId !== CURRENT_USER_ID) {
     req.cookies.userId = CURRENT_USER_ID;
@@ -180,6 +189,10 @@ async function comitToDb(promise) {
   const [error, data] = await app.to(promise);
   if (error) return app.httpErrors.internalServerError(error.message);
   return data;
+}
+
+if (process.env.NODE_ENV == "Production") {
+  app.use(express.static("client/build"));
 }
 
 var port = process.env.PORT || 8080;
