@@ -10,7 +10,7 @@ const app = fastify({ logger: true });
 app.register(sensible);
 app.register(cookie, { secret: process.env.Cookie_Secret });
 app.register(cors, {
-  origin: true,
+  origin: "https://nested-comment-bar.vercel.app/",
   allowedHeaders: [
     "Origin",
     "X-Requested-With",
@@ -193,6 +193,7 @@ async function comitToDb(promise) {
 
 if (process.env.NODE_ENV == "Production") {
   app.use(express.static("client/build"));
+  console.log("Production");
 }
 
 var port = process.env.PORT || 8080;
