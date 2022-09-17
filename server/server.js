@@ -195,7 +195,7 @@ async function comitToDb(promise) {
   return data;
 }
 
-app.use(fastify.static(path.join(_dirname, "/client/build")));
+app.use(fastify.static(path.join(__dirname, "/client/build")));
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "/client/build", "index.html"));
