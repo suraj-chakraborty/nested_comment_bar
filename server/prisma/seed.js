@@ -26,7 +26,11 @@ async function seed() {
   });
 
   const comment1 = await prisma.comment.create({
-    data: { message: "I am a root comment", userId: Raj.id, postId: post1.id },
+    data: {
+      message: "I am a root comment",
+      userId: Raj.id,
+      postId: post1.id,
+    },
   });
   const comment2 = await prisma.comment.create({
     data: {
@@ -38,9 +42,18 @@ async function seed() {
   });
   const comment3 = await prisma.comment.create({
     data: {
+      parentId: comment2.id,
       message: "I am a root comment",
       userId: Suraj.id,
       postId: post1.id,
+    },
+  });
+  const comment4 = await prisma.comment.create({
+    data: {
+      parentId: comment2.id,
+      message: "I am a root comment",
+      userId: Suraj.id,
+      postId: post2.id,
     },
   });
 }

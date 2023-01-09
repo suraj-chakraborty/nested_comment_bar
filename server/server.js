@@ -6,18 +6,12 @@ import { PrismaClient } from "@prisma/client";
 import cookie from "@fastify/cookie";
 dotenv.config();
 
-const app = fastify({ logger: true });
+const app = fastify();
 app.register(sensible);
 app.register(cookie, { secret: process.env.Cookie_Secret });
 app.register(cors, {
-  origin: "https://nested-comment-bar.vercel.app/",
-  allowedHeaders: [
-    "Origin",
-    "X-Requested-With",
-    "Accept",
-    "Content-Type",
-    "Authorization",
-  ],
+  origin: process.env.CLIENT_URL,
+  credentials: true,
 });
 app.addHook("onRequest", (req, res, done) => {
   if (req.cookies.userId !== CURRENT_USER_ID) {
@@ -44,13 +38,9 @@ const COMMENT_SELECT_VARIABLES = {
 const prisma = new PrismaClient();
 const CURRENT_USER_ID = (
   await prisma.user.findFirst({
-    where: { name: "Suraj" },
+    where: { name: "Raj" },
   })
 ).id;
-
-app.get("/posts", async (req, res) => {
-  return res.data("server is running");
-});
 
 app.get("/posts", async (req, res) => {
   return await comitToDb(
@@ -82,7 +72,7 @@ app.get("/posts/:id", async (req, res) => {
         },
       })
       .then(async (post) => {
-        const Like = await prisma.like.findMany({
+        const Like = await prisma?.like?.findMany({
           where: {
             userId: req.cookies.userId,
             commentId: { in: post.comments.map((comment) => comment.id) },
@@ -94,7 +84,7 @@ app.get("/posts/:id", async (req, res) => {
             const { _count, ...commentFields } = comment;
             return {
               ...commentFields,
-              likedByMe: Like.find((like) => like.commentId === comment.id),
+              likedByMe: Like?.find((like) => like.commentId === comment.id),
               LikeCount: _count.Like,
             };
           }),
@@ -195,17 +185,10 @@ async function comitToDb(promise) {
   return data;
 }
 
-app.use(fastify.static(path.join(__dirname, "/client/build")));
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "/client/build", "index.html"));
-});
-
-var port = process.env.PORT || 8080;
-app.listen({ port }, (err, port) => {
+app.listen({ port: process.env.PORT || 5000 }, (err, PORT) => {
   if (err) {
     console.log(err.message);
   } else {
-    console.log(`Server is now listening on ${port}`);
+    console.log(`Server is now listening on ${PORT}`);
   }
 });
